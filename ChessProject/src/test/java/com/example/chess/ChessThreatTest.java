@@ -3,19 +3,39 @@ package com.example.chess;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class ChessThreatTest {
-    @Test
-    public void testIsKingUnderThreat_RookAttack() {
-        ChessThreat chessThreat = new ChessThreat();
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
-        assertTrue(chessThreat.isKingUnderThreat(4, 4, 4, 8, 8, 1));
-        assertTrue(chessThreat.isKingUnderThreat(4, 4, 8, 4, 1, 1));
-        assertTrue(chessThreat.isKingUnderThreat(4, 4, 2, 2, 6, 6));
+public class ChessThreatTest {
+
+    @Test
+    public void runTestsFromDatabase() throws SQLException {
+        List<TestData> testDataList = DatabaseUtils.getTestData();
+        for (TestData testData : testDataList) {
+            if (testData.getExpectedResult()) {
+                testIsKingUnderThreat_RookAttack(testData);
+            } else {
+                testIsKingNotUnderThreat_RookAttack(testData);
+            }
+        }
     }
 
-    @Test
-    public void testIsKingUnderThreat_RookBishopBlock() {
+    public void testIsKingUnderThreat_RookAttack(TestData testData) {
         ChessThreat chessThreat = new ChessThreat();
-        assertFalse(chessThreat.isKingUnderThreat(4, 4, 5, 8, 6, 7));
+        assertTrue(chessThreat.isKingUnderThreat(testData.getKingX(), testData.getKingY(),
+                                                testData.getRookX(), testData.getRookY(),
+                                                testData.getBishopX(), testData.getBishopY()));
+    }
+
+    public void testIsKingNotUnderThreat_RookAttack(TestData testData) {
+        ChessThreat chessThreat = new ChessThreat();
+        assertFalse(chessThreat.isKingUnderThreat(testData.getKingX(), testData.getKingY(),
+                                                 testData.getRookX(), testData.getRookY(),
+                                                 testData.getBishopX(), testData.getBishopY()));
     }
 }
